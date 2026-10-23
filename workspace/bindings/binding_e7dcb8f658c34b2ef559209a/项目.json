@@ -1,0 +1,930 @@
+{
+	"format_version": 1.0,
+	"id": "binding_e7dcb8f658c34b2ef559209a",
+	"name": "角色绑定",
+	"rig_id": "standard_humanoid_v1",
+	"revision": 48.0,
+	"model_name": "tripo_convert_a2c9acdd-51e8-48b4-9a72-60ba70c9f1da.fbx",
+	"source_path": "I:\\PROJECT\\Godot\\Puppet\\workspace\\imports\\角色样本\\tripo_convert_a2c9acdd-51e8-48b4-9a72-60ba70c9f1da.fbx",
+	"model_resources": [
+		"模型_00.res"
+	],
+	"vertices": 21509.0,
+	"bounds_position_m": [
+		-0.112548857927322,
+		-0.0000001823066924,
+		-0.218994110822678
+	],
+	"bounds_size_m": [
+		0.22509765625,
+		0.99951171875,
+		0.43798828125
+	],
+	"rig": {
+		"schema_version": 1.0,
+		"id": "standard_humanoid_v1",
+		"name": "标准人形",
+		"skeleton_version": 1.0,
+		"revision": 1,
+		"bones": [
+			{
+				"id": "root",
+				"name": "根节点",
+				"parent_id": "",
+				"rest_translation_m": [
+					0.0,
+					0.0,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.707106828689575,
+					0.0,
+					0.707106828689575
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-180.0,
+						-180.0,
+						-180.0
+					],
+					"maximum_deg": [
+						180.0,
+						180.0,
+						180.0
+					]
+				},
+				"semantic": {
+					"role": "root",
+					"side": "center"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.03,
+					"draw_parent_bone": false
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "pelvis",
+				"name": "骨盆",
+				"parent_id": "root",
+				"rest_translation_m": [
+					0.0,
+					0.519999980926514,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-45.0,
+						-70.0,
+						-40.0
+					],
+					"maximum_deg": [
+						45.0,
+						70.0,
+						40.0
+					]
+				},
+				"semantic": {
+					"role": "pelvis",
+					"side": "center"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.11,
+					"draw_parent_bone": false
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "spine_lower",
+				"name": "腰部",
+				"parent_id": "pelvis",
+				"rest_translation_m": [
+					0.0,
+					0.0699999928474426,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-35.0,
+						-40.0,
+						-30.0
+					],
+					"maximum_deg": [
+						35.0,
+						40.0,
+						30.0
+					]
+				},
+				"semantic": {
+					"role": "joint",
+					"side": "center"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.11,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "spine_upper",
+				"name": "上脊柱",
+				"parent_id": "spine_lower",
+				"rest_translation_m": [
+					0.0,
+					0.0799999833106995,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-35.0,
+						-40.0,
+						-30.0
+					],
+					"maximum_deg": [
+						35.0,
+						40.0,
+						30.0
+					]
+				},
+				"semantic": {
+					"role": "joint",
+					"side": "center"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.12,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "chest",
+				"name": "胸部",
+				"parent_id": "spine_upper",
+				"rest_translation_m": [
+					0.0,
+					0.100000023841858,
+					-0.00999999977648258
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-35.0,
+						-45.0,
+						-30.0
+					],
+					"maximum_deg": [
+						35.0,
+						45.0,
+						30.0
+					]
+				},
+				"semantic": {
+					"role": "chest",
+					"side": "center"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.14,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "neck",
+				"name": "颈部",
+				"parent_id": "chest",
+				"rest_translation_m": [
+					0.0,
+					0.0699999928474426,
+					0.00999999977648258
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-45.0,
+						-65.0,
+						-35.0
+					],
+					"maximum_deg": [
+						45.0,
+						65.0,
+						35.0
+					]
+				},
+				"semantic": {
+					"role": "neck",
+					"side": "center"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "head",
+				"name": "头部",
+				"parent_id": "neck",
+				"rest_translation_m": [
+					0.0,
+					0.0899999737739563,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-40.0,
+						-70.0,
+						-35.0
+					],
+					"maximum_deg": [
+						40.0,
+						70.0,
+						35.0
+					]
+				},
+				"semantic": {
+					"role": "head",
+					"side": "center"
+				},
+				"display": {
+					"kind": "head",
+					"radius_m": 0.11,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "clavicle_l",
+				"name": "左锁骨",
+				"parent_id": "chest",
+				"rest_translation_m": [
+					0.0399999991059303,
+					0.050000011920929,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-35.0,
+						-40.0,
+						-35.0
+					],
+					"maximum_deg": [
+						35.0,
+						40.0,
+						35.0
+					]
+				},
+				"semantic": {
+					"role": "clavicle",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.04,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "upper_arm_l",
+				"name": "左上臂",
+				"parent_id": "clavicle_l",
+				"rest_translation_m": [
+					0.0499999970197678,
+					-0.0200000405311584,
+					0.00999999791383743
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-170.0,
+						-160.0,
+						-170.0
+					],
+					"maximum_deg": [
+						170.0,
+						160.0,
+						170.0
+					]
+				},
+				"semantic": {
+					"role": "upper_arm",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "forearm_l",
+				"name": "左前臂",
+				"parent_id": "upper_arm_l",
+				"rest_translation_m": [
+					0.0399999991059303,
+					-0.0999999642372131,
+					-0.00999999791383743
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-85.0,
+						-145.0,
+						-8.0
+					],
+					"maximum_deg": [
+						85.0,
+						0.0,
+						8.0
+					]
+				},
+				"semantic": {
+					"role": "forearm",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.04,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "hand_l",
+				"name": "左手",
+				"parent_id": "forearm_l",
+				"rest_translation_m": [
+					0.0599999986588955,
+					-0.160000026226044,
+					0.00999997556209564
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-65.0,
+						-70.0,
+						-80.0
+					],
+					"maximum_deg": [
+						65.0,
+						70.0,
+						80.0
+					]
+				},
+				"semantic": {
+					"role": "hand",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.04,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "clavicle_r",
+				"name": "右锁骨",
+				"parent_id": "chest",
+				"rest_translation_m": [
+					-0.0299999974668026,
+					0.050000011920929,
+					0.00000000186264514
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-35.0,
+						-40.0,
+						-35.0
+					],
+					"maximum_deg": [
+						35.0,
+						40.0,
+						35.0
+					]
+				},
+				"semantic": {
+					"role": "clavicle",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.04,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "upper_arm_r",
+				"name": "右上臂",
+				"parent_id": "clavicle_r",
+				"rest_translation_m": [
+					-0.0499998442828655,
+					-0.0200000405311584,
+					0.0100000537931919
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-170.0,
+						-160.0,
+						-170.0
+					],
+					"maximum_deg": [
+						170.0,
+						160.0,
+						170.0
+					]
+				},
+				"semantic": {
+					"role": "upper_arm",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "forearm_r",
+				"name": "右前臂",
+				"parent_id": "upper_arm_r",
+				"rest_translation_m": [
+					-0.0300001576542854,
+					-0.0999999642372131,
+					-0.0100000575184822
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-85.0,
+						0.0,
+						-8.0
+					],
+					"maximum_deg": [
+						85.0,
+						145.0,
+						8.0
+					]
+				},
+				"semantic": {
+					"role": "forearm",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.04,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "hand_r",
+				"name": "右手",
+				"parent_id": "forearm_r",
+				"rest_translation_m": [
+					-0.0699998140335083,
+					-0.149999976158142,
+					0.0200003013014793
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-65.0,
+						-70.0,
+						-80.0
+					],
+					"maximum_deg": [
+						65.0,
+						70.0,
+						80.0
+					]
+				},
+				"semantic": {
+					"role": "hand",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.04,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "thigh_l",
+				"name": "左大腿",
+				"parent_id": "pelvis",
+				"rest_translation_m": [
+					0.0499999970197678,
+					-0.0199999809265137,
+					-0.00999999791383743
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-115.0,
+						-50.0,
+						-55.0
+					],
+					"maximum_deg": [
+						60.0,
+						50.0,
+						55.0
+					]
+				},
+				"semantic": {
+					"role": "thigh",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.065,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "shin_l",
+				"name": "左小腿",
+				"parent_id": "thigh_l",
+				"rest_translation_m": [
+					0.00999986007809639,
+					-0.159999996423721,
+					0.0199998877942562
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						0.0,
+						-5.0,
+						-3.0
+					],
+					"maximum_deg": [
+						145.0,
+						5.0,
+						3.0
+					]
+				},
+				"semantic": {
+					"role": "shin",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "foot_l",
+				"name": "左脚",
+				"parent_id": "shin_l",
+				"rest_translation_m": [
+					0.0200000070035458,
+					-0.300000011920929,
+					-0.0299999974668026
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-45.0,
+						-30.0,
+						-30.0
+					],
+					"maximum_deg": [
+						60.0,
+						30.0,
+						30.0
+					]
+				},
+				"semantic": {
+					"role": "foot",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "toe_l",
+				"name": "左脚趾",
+				"parent_id": "foot_l",
+				"rest_translation_m": [
+					0.00999990105628967,
+					-0.0200000591576099,
+					0.0899999886751175
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-45.0,
+						-10.0,
+						-10.0
+					],
+					"maximum_deg": [
+						45.0,
+						10.0,
+						10.0
+					]
+				},
+				"semantic": {
+					"role": "toe",
+					"side": "left"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.035,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "thigh_r",
+				"name": "右大腿",
+				"parent_id": "pelvis",
+				"rest_translation_m": [
+					-0.0499999970197678,
+					-0.0199999809265137,
+					0.0
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-115.0,
+						-50.0,
+						-55.0
+					],
+					"maximum_deg": [
+						60.0,
+						50.0,
+						55.0
+					]
+				},
+				"semantic": {
+					"role": "thigh",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.065,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "shin_r",
+				"name": "右小腿",
+				"parent_id": "thigh_r",
+				"rest_translation_m": [
+					-0.0099998451769352,
+					-0.159999996423721,
+					0.0200001019984484
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						0.0,
+						-5.0,
+						-3.0
+					],
+					"maximum_deg": [
+						145.0,
+						5.0,
+						3.0
+					]
+				},
+				"semantic": {
+					"role": "shin",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "foot_r",
+				"name": "右脚",
+				"parent_id": "shin_r",
+				"rest_translation_m": [
+					-0.029999915510416,
+					-0.280000001192093,
+					-0.029999915510416
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-45.0,
+						-30.0,
+						-30.0
+					],
+					"maximum_deg": [
+						60.0,
+						30.0,
+						30.0
+					]
+				},
+				"semantic": {
+					"role": "foot",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.05,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			},
+			{
+				"id": "toe_r",
+				"name": "右脚趾",
+				"parent_id": "foot_r",
+				"rest_translation_m": [
+					-0.00000000745058059,
+					-0.0400000028312206,
+					0.0999999940395355
+				],
+				"rest_rotation_xyzw": [
+					0.0,
+					0.0,
+					0.0,
+					1.0
+				],
+				"limits": {
+					"type": "euler_xyz",
+					"minimum_deg": [
+						-45.0,
+						-10.0,
+						-10.0
+					],
+					"maximum_deg": [
+						45.0,
+						10.0,
+						10.0
+					]
+				},
+				"semantic": {
+					"role": "toe",
+					"side": "right"
+				},
+				"display": {
+					"kind": "joint",
+					"radius_m": 0.035,
+					"draw_parent_bone": true
+				},
+				"ik_chain_length": 2
+			}
+		]
+	},
+	"skin_mode": "smooth"
+}

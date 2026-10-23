@@ -1,0 +1,45 @@
+# Godot 导入缓存与本地工具不进入源码版本。
+.godot/
+tools/
+third_party/
+bin/
+build/
+# 本机配置、运行状态及缓存不进入源码版本。
+.codex/
+.env
+.env.*
+!.env.example
+
+# 保存有效动画、骨架、绑定项目和导入资源。
+/workspace/*
+!/workspace/.gdignore
+!/workspace/animations/
+!/workspace/rigs/
+!/workspace/bindings/
+!/workspace/imports/
+/workspace/**/*.previous
+/workspace/**/*.tmp
+/workspace/bindings/*.cfg
+
+# 保留可复用的动画制作脚本、动作标识和关键姿势规划。
+!/workspace/previews/
+/workspace/previews/*
+!/workspace/previews/*/
+/workspace/previews/*/*
+!/workspace/previews/*/*.py
+!/workspace/previews/*/动画标识.json
+!/workspace/previews/*/关键姿势规划.json
+*.obj
+*.obj.import
+*.os
+*.a
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.sconsign*
+*.lnk
+/木偶人.exe
+__pycache__/
+*.pyc
+

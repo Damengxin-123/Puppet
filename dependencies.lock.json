@@ -1,0 +1,36 @@
+{
+  "godot": {
+    "version": "4.7.2-stable",
+    "release": "https://github.com/godotengine/godot/releases/tag/4.7.2-stable",
+    "archive_url": "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_win64.exe.zip",
+    "archive_sha256": "731980f9608d61333e5baf54a2ef17210acc7a538446c0cb9969f002aca1e953",
+    "directory": "tools/Godot",
+    "license": "MIT"
+  },
+  "godot_cpp": {
+    "repository": "https://github.com/godotengine/godot-cpp.git",
+    "tag": "godot-4.5-stable",
+    "commit": "e83fd0904c13356ed1d4c3d09f8bb9132bdc6b77",
+    "minimum_runtime": "4.5",
+    "directory": "third_party/godot-cpp",
+    "license": "MIT"
+  },
+  "mcp": {
+    "sdk_package": "mcp",
+    "sdk_version": "2.3.0",
+    "requirements": "mcp_service/requirements.txt",
+    "transport": "stdio",
+    "internal_transport": "authenticated_loopback_tcp",
+    "api_version": "1.0"
+  },
+  "build": {
+    "scons": "4.10.1",
+    "python_environment": "tools/python",
+    "platform": "windows",
+    "architecture": "x86_64",
+    "compiler": "MSVC",
+    "native_target": "template_debug",
+    "optimization": "speed"
+  }
+}
+

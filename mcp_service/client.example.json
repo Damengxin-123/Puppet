@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "puppet": {
+      "command": "I:/PROJECT/Godot/Puppet/tools/python/Scripts/python.exe",
+      "args": ["I:/PROJECT/Godot/Puppet/mcp_service/server.py"]
+    }
+  }
+}

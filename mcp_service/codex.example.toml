@@ -1,0 +1,6 @@
+# Codex stdio 连接示例，迁移目录后可以从软件设置中重新复制。
+[mcp_servers.puppet]
+command = "I:/PROJECT/Godot/Puppet/tools/python/Scripts/python.exe"
+args = ["I:/PROJECT/Godot/Puppet/mcp_service/server.py"]
+startup_timeout_sec = 20
+tool_timeout_sec = 90
