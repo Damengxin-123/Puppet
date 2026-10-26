@@ -386,7 +386,7 @@ func query_weights(params: Dictionary) -> Dictionary:
 	return {"ok": true, "project_id": project.id, "project_revision": project.revision, "algorithm": "surface_geodesic_v2", "surfaces": meshes, "total": matches.size(), "offset": offset, "vertices": result, "manual_vertex_count": project.get("weight_overrides", {}).size()}
 
 ## 原子编辑整组选区，自动归一化并保留最多四权重；历史、保存与关节共用。
-func edit_weights(params: Dictionary) -> Dictionary:
+func edit_weights(params: Dictionary, transient: bool = false) -> Dictionary:
 	var selection = weight_selection(params)
 	if not selection.ok:
 		return selection
@@ -442,19 +442,45 @@ func edit_weights(params: Dictionary) -> Dictionary:
 		else:
 			var old = float(value.get(target, 0))
 			var desired = amount if operation == "set" else clampf(old + amount * (-1.0 if operation == "subtract" else 1.0), 0, 1)
-			value.erase(target)
-			if value.is_empty() and desired < 1.0:
+			if desired < old and bool(params.get("transfer_reduced", false)):
 				if fallback < 0 or fallback == target:
-					return _failure("唯一影响降到 1 以下时，请指定不同的接收骨骼。")
-				value[fallback] = 1.0
-			value = engine.normalize(value)
-			# 提前保留目标骨骼名额，避免设定的小权重被四项截断挤掉。
-			if desired > 0 and value.size() > 3:
-				value.erase(value.keys()[-1])
+					return _failure("降低权重时请选择另一根接收骨骼，例如胸部。")
+				value[target] = desired
+				value[fallback] = float(value.get(fallback, 0)) + old - desired
+				# 保留目标和接收骨骼；超出四项时把最小的其他影响并入接收骨骼。
+				if desired <= 0.000001:
+					value.erase(target)
+				while value.size() > 4:
+					var weakest = -1
+					for bone in value:
+						if bone != target and bone != fallback and (weakest < 0 or value[bone] < value[weakest]):
+							weakest = bone
+					value[fallback] += value[weakest]
+					value.erase(weakest)
+			else:
+				value.erase(target)
+				if value.is_empty() and desired < 1.0:
+					if fallback < 0 or fallback == target:
+						return _failure("唯一影响降到 1 以下时，请指定不同的接收骨骼。")
+					value[fallback] = 1.0
 				value = engine.normalize(value)
+				# 提前保留目标骨骼名额，避免设定的小权重被四项截断挤掉。
+				if desired > 0 and value.size() > 3:
+					value.erase(value.keys()[-1])
+					value = engine.normalize(value)
+				for bone in value:
+					value[bone] *= 1.0 - desired
+				value[target] = desired
+		if params.has("brush_seed") and engine.lookup.has(str(params.brush_seed)):
+			var seed: int = engine.welds[engine.lookup[str(params.brush_seed)]]
+			var distance = engine.points[engine.welds[index]].distance_to(engine.points[seed])
+			var fraction = clampf(distance / maxf(0.01, float(params.brush_radius)), 0, 1)
+			var blend = 1.0 - fraction * fraction * (3.0 - 2.0 * fraction)
+			var original: Dictionary = weights[index]
 			for bone in value:
-				value[bone] *= 1.0 - desired
-			value[target] = desired
+				value[bone] *= blend
+			for bone in original:
+				value[bone] = float(value.get(bone, 0)) + original[bone] * (1.0 - blend)
 		value = engine.normalize(value)
 		if value.is_empty():
 			return _failure("修改后至少需要一根骨骼影响顶点。")
@@ -465,7 +491,7 @@ func edit_weights(params: Dictionary) -> Dictionary:
 	project.weight_overrides = overrides
 	project.weight_algorithm = "surface_geodesic_v2"
 	skinned_parts.clear()
-	var result = _commit(before)
+	var result = {"ok": true} if transient else _commit(before)
 	result.affected_vertices = selection.vertex_ids.size()
 	return result
 
@@ -623,3 +649,63 @@ func _array(value: Vector3) -> Array:
 func _failure(message: String) -> Dictionary:
 	last_error = message
 	return {"ok": false, "error": message}
+
+## 替换源骨架并按角色高度适配；原骨架和权重可整体撤销。
+func switch_rig(rig_id: String) -> Dictionary:
+	if project.is_empty():
+		return _failure("请先打开项目。")
+	if rig_id == project.rig_id:
+		return {"ok": true}
+	var definition: Dictionary = registry.get_definition(rig_id)
+	if definition.is_empty():
+		return _failure("源骨架不存在。")
+	var before = project.duplicate(true)
+	var reference: Array = registry.create_core(rig_id).evaluate_transforms(PackedVector3Array(), Vector3.ZERO)
+	var bounds = AABB(reference[0].position, Vector3.ZERO)
+	for transform in reference:
+		bounds = bounds.expand(transform.position)
+	var scale_factor = float(project.bounds_size_m[1]) / maxf(bounds.size.y + 0.15, 0.01)
+	var model_bounds = AABB(registry.to_vector(project.bounds_position_m), registry.to_vector(project.bounds_size_m))
+	for bone in definition.bones:
+		var offset: Vector3 = registry.to_vector(bone.rest_translation_m) * scale_factor
+		if str(bone.parent_id).is_empty():
+			offset += Vector3(model_bounds.get_center().x, model_bounds.position.y, model_bounds.get_center().z)
+		bone.rest_translation_m = _array(offset.snapped(Vector3.ONE * 0.01))
+	project.rig_id = rig_id
+	project.rig = definition
+	project.weight_overrides = {}
+	_rebuild_core()
+	return _commit(before)
+
+## 固定手工顶点，将修正沿邻接拓扑传播三圈并迭代平滑过渡区。
+func smooth_manual_boundaries() -> Dictionary:
+	if project.is_empty():
+		return _failure("请先打开项目。")
+	var before = project.duplicate(true)
+	var engine = get_weight_engine()
+	var anchors: Dictionary = project.get("weight_overrides", {}).duplicate(true)
+	if anchors.is_empty():
+		return _failure("请先涂抹需要修正的区域。")
+	var region: Dictionary = {}
+	for id in anchors:
+		region[engine.welds[engine.lookup[id]]] = true
+	for ring in 3:
+		for node in region.keys():
+			for adjacent in engine.neighbors[node]:
+				region[adjacent] = true
+	var selected: Array = []
+	for node in region:
+		for original in engine.originals[node]:
+			if not anchors.has(engine.ids[original]):
+				selected.append(engine.ids[original])
+	engine.invalidate()
+	skinned_parts.clear()
+	for iteration in 8:
+		if selected.is_empty():
+			break
+		var result = edit_weights({"vertex_ids": selected, "operation": "smooth", "value": 0.5}, true)
+		if not result.ok:
+			project = before
+			_rebuild_core()
+			return result
+	return _commit(before)

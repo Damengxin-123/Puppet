@@ -24,7 +24,13 @@ var rig_picker: OptionButton
 ## 可编辑项目名称。
 var name_input: LineEdit
 ## 关节选择列表。
-var joints: ItemList
+var joints: Tree
+## 树节点按骨骼索引保存，便于视口同步选择。
+var joint_items: Array = []
+## 最左侧功能入口。
+var functions_list: ItemList
+## 骨架配置区只在绑定功能中显示。
+var rig_config: VBoxContainer
 ## 动画选择列表。
 var animations: ItemList
 ## 当前关节坐标输入。
@@ -67,6 +73,13 @@ func initialize(owner_node, binding_service) -> void:
 	size_flags_vertical = Control.SIZE_EXPAND_FILL
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	add_theme_constant_override("separation", 12)
+	functions_list = ItemList.new()
+	functions_list.custom_minimum_size.x = 110
+	functions_list.add_item("骨骼绑定")
+	functions_list.add_item("蒙皮权重")
+	functions_list.select(0)
+	functions_list.item_selected.connect(_switch_function)
+	add_child(functions_list)
 	var left = VBoxContainer.new()
 	left.custom_minimum_size.x = 210
 	add_child(left)
@@ -77,16 +90,21 @@ func initialize(owner_node, binding_service) -> void:
 	projects.fit_to_longest_item = false
 	projects.custom_minimum_size.x = 210
 	left.add_child(host._button("导入模型 · 新建项目", _choose_model, "PrimaryButton"))
+	rig_config = VBoxContainer.new()
+	left.add_child(rig_config)
 	rig_picker = OptionButton.new()
-	left.add_child(rig_picker)
+	rig_picker.fit_to_longest_item = false
+	rig_picker.item_selected.connect(_switch_rig)
+	rig_config.add_child(rig_picker)
 	left.add_child(host._label("关节", 15))
-	joints = ItemList.new()
+	joints = Tree.new()
+	joints.hide_root = true
 	joints.add_theme_stylebox_override("panel", host._style("ffffff", "dce5e9", 4, 4))
 	joints.add_theme_color_override("font_color", host.INK)
 	joints.add_theme_color_override("font_selected_color", host.ACCENT)
 	joints.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	joints.custom_minimum_size.y = 150
-	joints.item_selected.connect(_select_joint)
+	joints.item_selected.connect(_tree_selected)
 	left.add_child(joints)
 	left.add_child(host._label("动画 · 点击即预览（只读）", 13))
 	animations = ItemList.new()
@@ -153,6 +171,7 @@ func initialize(owner_node, binding_service) -> void:
 	orientation.add_child(host._button("骨架左转 90°", _rotate_rig.bind(90.0)))
 	orientation.add_child(host._button("右转 90°", _rotate_rig.bind(-90.0)))
 	details_tabs = TabContainer.new()
+	details_tabs.tabs_visible = false
 	details_tabs.add_theme_stylebox_override("panel", host._style("ffffff", "dce5e9", 4, 6))
 	for state in ["selected", "unselected", "hovered"]:
 		details_tabs.add_theme_stylebox_override("tab_" + state, host._style("e0f2ed" if state == "selected" else "f5f8fa", "dce5e9", 4, 6))
@@ -196,6 +215,9 @@ func initialize(owner_node, binding_service) -> void:
 	weight_panel.name = "蒙皮权重"
 	details_tabs.add_child(weight_panel)
 	weight_panel.initialize(self)
+	weight_panel.brush_config.reparent(left)
+	left.move_child(weight_panel.brush_config, 4)
+	weight_panel.brush_config.visible = false
 	details_tabs.tab_changed.connect(_details_tab_changed)
 	var note = host._label("关节位置与骨长只影响当前项目。\n\n修改自动保存。预览可能因关节尚未对齐而扭曲；返回绑定姿态后显示原始模型。\n\n原模型与原动画不会被改写。", 12)
 	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -261,16 +283,26 @@ func refresh() -> void:
 	for item in host.rig_registry.list_rigs():
 		rig_picker.add_item("源骨架：" + str(item.name))
 		rig_picker.set_item_metadata(rig_picker.item_count - 1, item.rig_id)
-		if item.rig_id == host.active_rig_id:
+		if item.rig_id == service.project.get("rig_id", host.active_rig_id):
 			rig_picker.select(rig_picker.item_count - 1)
 	joints.clear()
+	joint_items.clear()
 	animations.clear()
 	if not service.project.is_empty():
 		view.set_binding(service)
 		name_input.text = service.project.name
 		skin_mode.select(1 if service.project.skin_mode == "rigid" else 0)
+		var tree_root = joints.create_item()
 		for bone in service.bones:
-			joints.add_item(bone.name)
+			var item = joints.create_item(tree_root)
+			item.set_text(0, bone.name)
+			item.set_metadata(0, joint_items.size())
+			joint_items.append(item)
+		for index in service.bones.size():
+			var parent = int(service.bones[index].parent)
+			if parent >= 0:
+				tree_root.remove_child(joint_items[index])
+				joint_items[parent].add_child(joint_items[index])
 		var document: Dictionary = host.commands.get_document_for_rig(service.project.rig_id)
 		if not document.is_empty():
 			for clip in document.library.clips:
@@ -280,7 +312,7 @@ func refresh() -> void:
 		if selected >= service.bones.size():
 			selected = -1
 		if selected >= 0:
-			joints.select(selected)
+			joint_items[selected].select(0)
 			view.select_joint(selected)
 	preview_label.text = "绑定姿态 · 拖动关节适配角色"
 	play_button.text = "播放"
@@ -308,8 +340,8 @@ func _select_joint(index: int) -> void:
 ## 从视口选择关节时同步列表及细节。
 func _view_selected(index: int) -> void:
 	selected = index
-	if index >= 0 and index < joints.item_count:
-		joints.select(index)
+	if index >= 0 and index < joint_items.size():
+		joint_items[index].select(0)
 	_refresh_joint()
 	if weight_panel != null:
 		weight_panel.update_bone()
@@ -487,3 +519,26 @@ func show_result(result: Dictionary) -> void:
 func _details_tab_changed(index: int) -> void:
 	weight_panel.edit_toggle.button_pressed = index == 1
 	weight_panel.heat_toggle.button_pressed = index == 1
+
+## 树节点使用稳定索引选择当前骨骼。
+func _tree_selected() -> void:
+	var item = joints.get_selected()
+	if item != null:
+		_select_joint(int(item.get_metadata(0)))
+
+## 两个功能共享模型视口，各自显示对应的配置和右侧工具。
+func _switch_function(index: int) -> void:
+	weight_panel._finish_stroke()
+	stop_preview()
+	rig_config.visible = index == 0
+	weight_panel.brush_config.visible = index == 1
+	details_tabs.current_tab = index
+	preview_label.text = "绑定姿态 · 拖动红色关节适配模型" if index == 0 else "选择骨骼 · 左键涂抹权重 · 松开保存一笔"
+
+## 切换项目使用的骨架，并通过撤销保留原绑定结果。
+func _switch_rig(index: int) -> void:
+	if refreshing or service.project.is_empty():
+		return
+	stop_preview()
+	selected = -1
+	show_result(service.switch_rig(str(rig_picker.get_item_metadata(index))))

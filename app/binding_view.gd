@@ -5,6 +5,14 @@ extends "res://app/rig_view.gd"
 signal rest_joint_dragged(index: int, target: Vector3)
 ## 点击可见模型表面后返回原始稳定顶点标识。
 signal weight_vertex_picked(vertex_id: String)
+## 一笔涂抹开始和结束，用于合并保存与撤销。
+signal weight_stroke_started
+## 鼠标释放或焦点丢失时完成当前笔画。
+signal weight_stroke_finished
+## 当前是否正在连续涂抹。
+var weight_painting: bool = false
+## 上次采样的屏幕位置，避免同点抖动重复累积。
+var last_paint_pixel: Vector2
 ## 权重模式下左键只选择表面，不移动关节。
 var weight_edit_mode: bool = false
 ## 热图对应的稳定骨骼标识，空字符串表示原材质。
@@ -35,8 +43,8 @@ func set_binding(service) -> void:
 	# 关节点穿透模型显示，便于选择位于身体内部的骨骼。
 	core_material.no_depth_test = true
 	selected_material.no_depth_test = true
-	core_material.albedo_color = Color("16a89b")
-	selected_material.albedo_color = Color("f1a12d")
+	core_material.albedo_color = Color("ed2424")
+	selected_material.albedo_color = Color("ff6868")
 	# 根据角色高度调整标记尺寸，小体型角色不会被关节球遮住。
 	var marker_scale = clampf(float(binding.project.bounds_size_m[1]) / 1.8, 0.1, 3.0)
 	for point in joint_points:
@@ -108,6 +116,19 @@ func _gui_input(event: InputEvent) -> void:
 	if binding != null and weight_edit_mode and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			grab_focus()
+			weight_painting = true
+			last_paint_pixel = event.position
+			weight_stroke_started.emit()
+			var id = pick_weight_vertex(event.position)
+			if not id.is_empty():
+				weight_vertex_picked.emit(id)
+		else:
+			finish_weight_stroke()
+		accept_event()
+		return
+	if weight_painting and event is InputEventMouseMotion:
+		if last_paint_pixel.distance_to(event.position) >= 4.0:
+			last_paint_pixel = event.position
 			var id = pick_weight_vertex(event.position)
 			if not id.is_empty():
 				weight_vertex_picked.emit(id)
@@ -242,3 +263,19 @@ func pick_weight_vertex(pixel: Vector2) -> String:
 						nearest = candidate
 				result = engine.ids[surface.start + nearest]
 	return result
+
+## 松开视口外的鼠标或切换窗口也提交当前笔画，避免遗留编辑事务。
+func _input(event: InputEvent) -> void:
+	if weight_painting and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		finish_weight_stroke()
+
+## 完成笔画并通知工具面板保存。
+func finish_weight_stroke() -> void:
+	if weight_painting:
+		weight_painting = false
+		weight_stroke_finished.emit()
+
+## 应用失去焦点时结束正在进行的涂抹。
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		finish_weight_stroke()
